@@ -958,7 +958,7 @@ const CongratsModal = ({ onClose }: { onClose: () => void, key?: React.Key }) =>
         
         <div className="space-y-4">
           <h2 className="text-5xl font-display font-black leading-none uppercase italic">
-            CONGRATULATIONS
+            CONGRATS
           </h2>
           <p className="text-xl font-medium text-stone-900 leading-snug">
             You've successfully discovered all the hidden hotspots in the house. <br />You're a true CB!
