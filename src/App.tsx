@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Info, 
@@ -362,14 +362,7 @@ export default function App() {
       // Cmd/Ctrl + U to lock
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'u') {
         e.preventDefault();
-        setIsUnlocked(false);
-        localStorage.removeItem('cbflat_unlocked');
-        localStorage.removeItem('cbflat_discovered');
-        setPasscode('');
-        // Reset other states if needed
-        setSelectedRoom(null);
-        setActiveHotspot(null);
-        setDiscoveredHotspots(new Set());
+        handleReset();
       }
       
       // Cmd/Ctrl + G to trigger congrats
@@ -423,6 +416,55 @@ export default function App() {
   const [showCongrats, setShowCongrats] = useState(false);
 
   const totalHotspots = ROOMS.reduce((acc, room) => acc + room.hotspots.length, 0);
+
+  const handleReset = () => {
+    setIsUnlocked(false);
+    localStorage.removeItem('cbflat_unlocked');
+    localStorage.removeItem('cbflat_discovered');
+    setPasscode('');
+    setSelectedRoom(null);
+    setActiveHotspot(null);
+    setDiscoveredHotspots(new Set());
+  };
+
+  // Long press logic for title reset
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const progressInterval = useRef<NodeJS.Timeout | null>(null);
+  const [longPressProgress, setLongPressProgress] = useState(0);
+  const LONG_PRESS_DURATION = 5000;
+
+  const startLongPress = () => {
+    setLongPressProgress(0);
+    const startTime = Date.now();
+    
+    // Update progress bar
+    progressInterval.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min((elapsed / LONG_PRESS_DURATION) * 100, 100);
+      setLongPressProgress(progress);
+      if (progress >= 100 && progressInterval.current) {
+        clearInterval(progressInterval.current);
+      }
+    }, 50);
+
+    longPressTimer.current = setTimeout(() => {
+      if (progressInterval.current) clearInterval(progressInterval.current);
+      handleReset();
+      setLongPressProgress(0);
+    }, LONG_PRESS_DURATION);
+  };
+
+  const cancelLongPress = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    if (progressInterval.current) {
+      clearInterval(progressInterval.current);
+      progressInterval.current = null;
+    }
+    setLongPressProgress(0);
+  };
 
   // Calculate dynamic bounds for the floorplan to make it perfectly responsive
   const floorplanBounds = useMemo(() => {
@@ -603,13 +645,40 @@ export default function App() {
       <main className="flex-1 flex flex-col lg:grid lg:grid-cols-3 gap-4 md:gap-8 lg:gap-12 w-full px-4 md:px-12 lg:px-24 relative z-10 py-6 md:py-12 lg:py-24 overflow-hidden lg:overflow-visible">
         {/* Title Section */}
         <div className="lg:col-span-1 flex flex-col justify-between lg:h-full order-1 flex-shrink-0">
-          <motion.h1 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-6xl md:text-8xl lg:text-[12rem] font-display font-bold leading-none text-center lg:text-left mb-4 lg:mb-0"
-          >
-            the cb flat
-          </motion.h1>
+          <div className="relative group">
+            <motion.h1 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-6xl md:text-8xl lg:text-[12rem] font-display font-bold leading-none text-center lg:text-left mb-4 lg:mb-0 cursor-help select-none"
+              onMouseDown={startLongPress}
+              onMouseUp={cancelLongPress}
+              onMouseLeave={cancelLongPress}
+              onTouchStart={startLongPress}
+              onTouchEnd={cancelLongPress}
+            >
+              the cb flat
+            </motion.h1>
+            
+            {/* Progress Bar for Long Press */}
+            <AnimatePresence>
+              {longPressProgress > 0 && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute bottom-0 left-0 h-2 bg-black rounded-full overflow-hidden"
+                  style={{ width: '100%' }}
+                >
+                  <motion.div 
+                    className="h-full bg-pink-500"
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${longPressProgress}%` }}
+                    transition={{ ease: "linear", duration: 0.05 }}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           
           {/* Desktop Description & Socials (Bottom Left) */}
           <div className="hidden lg:flex flex-col space-y-8 mt-auto">
