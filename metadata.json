@@ -1,0 +1,5 @@
+{
+  "name": "Flat Explorer",
+  "description": "An interactive floorplan experience for a 4-room flat, featuring room details and furniture hotspots.",
+  "requestFramePermissions": []
+}
