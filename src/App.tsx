@@ -67,7 +67,7 @@ const ROOMS: Room[] = [
         description: 'comes in a pair, really old',
         acquired: 'Arizona, 1999',
         zoomLevel: 250,
-        image: '/hotspotsphotos/sexinmice.jpg',
+        image: '/hotspotsphotos/bunny.jpg',
         customIcon: '/hotspots/bunny.png',
         iconWidth: 45,
         iconHeight: 45,
@@ -104,7 +104,7 @@ const ROOMS: Room[] = [
         title: 'felt ball',
         description: 'bry made this ball out of felt to practice making a real leather ball, one day...',
         acquired: 'Singapore, 2025',
-        image: '/hotspotsphotos/keyboard.jpg',
+        image: '/hotspotsphotos/ball.jpg',
         customIcon: '/hotspots/ball.png',
         iconWidth: 25,
         iconHeight: 25,
@@ -213,9 +213,9 @@ const ROOMS: Room[] = [
         x: 240,
         y: 290,
         title: 'toothbrush',
-        description: 'Keeping the master toilet smelling like a spa.',
+        description: 'bry is afraid this toothbrush will give him receeding gums',
         acquired: 'Singapore, 2026',
-        image: 'https://picsum.photos/seed/candle/400/300',
+        image: '/hotspotsphotos/toothbrush.jpg',
         customIcon: '/hotspots/toothbrush.png',
         iconWidth: 45,
         iconHeight: 45,
@@ -263,7 +263,7 @@ const ROOMS: Room[] = [
         title: 'Standees',
         description: 'hey you found us good job',
         acquired: 'our wedding, 2023',
-        image: 'https://picsum.photos/seed/storage/400/300',
+        image: '/hotspotsphotos/us.jpg',
         customIcon: '/hotspots/us.png',
         iconWidth: 45,
         iconHeight: 60,
@@ -958,7 +958,7 @@ const CongratsModal = ({ onClose }: { onClose: () => void, key?: React.Key }) =>
         
         <div className="space-y-4">
           <h2 className="text-5xl font-display font-black leading-none uppercase italic">
-            CONGRATS
+            CONGRATULATIONS
           </h2>
           <p className="text-xl font-medium text-stone-900 leading-snug">
             You've successfully discovered all the hidden hotspots in the house. <br />You're a true CB!
